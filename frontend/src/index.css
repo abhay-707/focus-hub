@@ -1,0 +1,46 @@
+/* index.css or App.css */
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+/* Optional: make background consistent */
+body {
+  background-color: #0d0d0d; /* or whatever your app bg is */
+}
+
+.cards-space {
+  padding: 5vh;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: flex-start;
+  align-content: flex-start;
+  gap: 5vw;
+}
+
+.day-card {
+  flex: 1 1 20vh;
+  min-width: 40vh;
+  max-width: 40vh;
+  min-height: 40vh;
+  max-height: 60vh;
+  padding: 16px;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  padding: 10vh;
+  padding-left: 40vh;
+  padding-right: 40vh;
+  gap: 5vh;
+  background-color: #262626;
+  margin: 5vh;
+  border-radius: 10pt;
+}
