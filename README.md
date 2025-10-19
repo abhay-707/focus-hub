@@ -48,3 +48,15 @@ npm run dev
 cd frontend
 npm run dev
 ```
+
+4. Future functionalities to be added
+
+- progress evaluator
+  - based on the how many tasks have been completed out of total tasks
+  - provide user feedback based on their efficiency
+- history feature
+  - integration of realtime date and time
+  - user can track their efficiency over past few months
+- Visual Enhancements
+  - UI improvements
+  - adding features like graphs for tracking efficiency
