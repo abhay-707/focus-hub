@@ -1,20 +1,22 @@
-# Focus Hub - Weekly Goal Tracker
+![svg](./images/Meditation-bro.svg)
 
-1. Tech Stack
+<h1>Focus Hub - Weekly Goal Tracker</h1>
 
-   - React
-   - Node.js
-   - Express.js
-   - PostgreSQL
+<h2>Tech Stack</h2>
 
-2. Snapshots
+- React
+- Node.js
+- Express.js
+- PostgreSQL
+
+<h2>Snapshots</h2>
 
 - Login Page
   ![login](/images/login.png)
 - Dashboard Page
   ![dashboard](/images/dashboard.png)
 
-3. How To run
+<h2>How to Run</h2>
 
 - clone the project
 
@@ -49,7 +51,7 @@ cd frontend
 npm run dev
 ```
 
-4. Future functionalities to be added
+<h2>Future functionalities to be added</h2>
 
 - progress evaluator
   - based on the how many tasks have been completed out of total tasks

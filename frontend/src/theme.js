@@ -8,6 +8,9 @@ const theme = createTheme({
     secondary: {
       main: "#1A1A1A",
     },
+    error: {
+      main: "#AD4848",
+    },
     danger: {
       main: "#AD4848",
     },

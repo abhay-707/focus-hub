@@ -13,6 +13,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import useAuth from "../hooks/useAuth";
 import Fab from "@mui/material/Fab";
+
 export default function Dashboard() {
   const [tasks, setTasks] = useRecoilState(tasksState);
   const [auth, setAuth] = useRecoilState(authState);
@@ -93,16 +94,22 @@ export default function Dashboard() {
       </AppBar>
       <Fab
         variant="extended"
-        color="danger"
         onClick={() => {
           resetTasks();
           window.location.reload();
         }}
         sx={{
-          position: "fixed", // fixed on screen
-          bottom: 16, // distance from bottom
-          right: 16, // distance from right
-          zIndex: 1000, // make sure it stays above other content
+          backgroundColor: "transparent",
+          border: "2px solid",
+          borderColor: "error.main",
+          color: "error.main",
+          "&:hover": {
+            backgroundColor: "transparent",
+          },
+          position: "fixed",
+          bottom: 16,
+          right: 16,
+          zIndex: 1000,
         }}
       >
         <RestartAltIcon sx={{ m: 1 }} />
@@ -113,21 +120,6 @@ export default function Dashboard() {
           <DayCard key={day} day={day} tasks={groupedTasks[day]} />
         ))}
       </div>
-
-      <center>
-        <Button
-          color="danger"
-          variant="outlined"
-          sx={{ m: 10, width: "50vw" }}
-          onClick={() => {
-            resetTasks();
-            window.location.reload();
-          }}
-        >
-          Reset week
-          <RestartAltIcon />
-        </Button>
-      </center>
     </>
   );
 }
