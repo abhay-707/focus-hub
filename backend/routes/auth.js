@@ -81,7 +81,8 @@ router.post("/login", async (req, res) => {
       token,
     });
   } catch (error) {
-    console.error("Error logging in", error);
+    console.error("Error logging in:", error.message, error.stack);
+
     res.status(500).json({ error: "Server error" });
   }
 });
