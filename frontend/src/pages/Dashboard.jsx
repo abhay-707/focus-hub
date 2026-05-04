@@ -1,8 +1,8 @@
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { tasksState } from "../state/tasksAtom";
 import { authState } from "../state/authAtom";
 import api from "../api/axios";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import Grid from "@mui/material/Grid";
 import DayCard from "../components/DayCard";
 import Button from "@mui/material/Button";
@@ -13,27 +13,35 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import useAuth from "../hooks/useAuth";
 import Fab from "@mui/material/Fab";
+import LinearProgress from "@mui/material/LinearProgress";
 
+// Dashboard.jsx
 export default function Dashboard() {
   const [tasks, setTasks] = useRecoilState(tasksState);
-  const [auth, setAuth] = useRecoilState(authState);
+  const auth = useRecoilValue(authState);
   const { logout } = useAuth();
+
   const fetchTasks = async () => {
     const res = await api.get("/tasks");
-
-    console.log(res.data);
-
     setTasks(res.data);
   };
 
   const resetTasks = async () => {
     try {
-      await api.put("/tasks/reset");
-      const res = await api.get("/tasks");
-      setTasks([...res.data]);
+      const res = await api.put("/tasks/reset");
+      setTasks(res.data.map((t) => ({ ...t })));
     } catch (error) {
       console.error("Couldn't reset:", error);
     }
+  };
+
+  // Called by Task after a successful toggle — keeps Recoil in sync
+  const handleTaskToggle = (taskId, newCompleted) => {
+    setTasks((prev) =>
+      prev.map((t) =>
+        t.id === taskId ? { ...t, completed: newCompleted } : t,
+      ),
+    );
   };
 
   const dayOrder = [
@@ -50,17 +58,23 @@ export default function Dashboard() {
     fetchTasks();
   }, []);
 
-  const groupedTasks = tasks.reduce((acc, task) => {
-    const day = task.day_of_week;
-    if (!acc[day]) acc[day] = [];
-    acc[day].push(task);
-    return acc;
-  }, {});
+  const totalTasks = tasks.length;
+  const completedTasks = tasks.filter((t) => t.completed).length;
+  const progressPercent =
+    totalTasks === 0 ? 0 : Math.round((completedTasks / totalTasks) * 100);
 
-  dayOrder.forEach((day) => {
-    if (!groupedTasks[day]) groupedTasks[day] = [];
-  });
-  console.log("Updated tasks state:", tasks);
+  const groupedTasks = useMemo(() => {
+    const acc = tasks.reduce((acc, task) => {
+      const day = task.day_of_week;
+      if (!acc[day]) acc[day] = [];
+      acc[day].push(task);
+      return acc;
+    }, {});
+    dayOrder.forEach((day) => {
+      if (!acc[day]) acc[day] = [];
+    });
+    return acc;
+  }, [tasks]);
 
   return (
     <>
@@ -72,40 +86,44 @@ export default function Dashboard() {
             justifyContent: "space-between",
           }}
         >
-          <Typography variant="h4" component="div">
-            Focus Hub
-          </Typography>
-
+          <Typography variant="h4">Focus Hub</Typography>
           <Box display="flex" alignItems="center" gap={2}>
             <Typography variant="subtitle1">
               Hello, {auth.user?.name || "User"}
             </Typography>
-            <Button
-              variant="outlined"
-              color="danger"
-              onClick={() => {
-                logout();
-              }}
-            >
+            <Button variant="outlined" color="danger" onClick={logout}>
               Logout
             </Button>
           </Box>
         </Toolbar>
+
+        <Box sx={{ px: 3, pb: 1.5 }}>
+          <Box display="flex" justifyContent="space-between" mb={0.5}>
+            <Typography variant="caption" color="text.secondary">
+              Weekly progress
+            </Typography>
+            <Typography variant="caption" color="text.secondary">
+              {completedTasks} / {totalTasks} · {progressPercent}%
+            </Typography>
+          </Box>
+          <LinearProgress
+            variant="determinate"
+            value={progressPercent}
+            color="success"
+            sx={{ borderRadius: 1, height: 6 }}
+          />
+        </Box>
       </AppBar>
+
       <Fab
         variant="extended"
-        onClick={() => {
-          resetTasks();
-          window.location.reload();
-        }}
+        onClick={resetTasks}
         sx={{
           backgroundColor: "transparent",
           border: "2px solid",
           borderColor: "error.main",
           color: "error.main",
-          "&:hover": {
-            backgroundColor: "transparent",
-          },
+          "&:hover": { backgroundColor: "transparent" },
           position: "fixed",
           bottom: 16,
           right: 16,
@@ -115,9 +133,15 @@ export default function Dashboard() {
         <RestartAltIcon sx={{ m: 1 }} />
         Reset Week
       </Fab>
+
       <div className="cards-space">
         {dayOrder.map((day) => (
-          <DayCard key={day} day={day} tasks={groupedTasks[day]} />
+          <DayCard
+            key={day}
+            day={day}
+            tasks={groupedTasks[day]}
+            onTaskToggle={handleTaskToggle}
+          />
         ))}
       </div>
     </>
